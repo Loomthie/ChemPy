@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.optimize import newton
 import plotly.graph_objects as go
-import xlwings as xl
+import jax.numpy as jnp
+# import xlwings as xl
 
 
 class BinaryDistillationTower:
@@ -22,14 +24,49 @@ class BinaryDistillationTower:
     D = 0
     R = 1
 
-    alpha=0
+    alpha=0.3
+    gamma=None
+
+    gamma_cij = np.array([])
+    column_pres = 14.696 # psi
+    vap_coeffs = np.array([])
 
     def __init__(self,**kwargs):
         for key,value in kwargs.items():
             self.__dict__[key] = value
 
     def eqy(self,eqx):
-        return eqx * self.alpha/(1+eqx*(self.alpha-1))
+        if self.gamma: return eqx*self.alpha/(1+eqx*(self.alpha-1))
+
+        def pvap(T,a=0,b=0,c=0,d=0,e=0):
+            return np.exp(a+b/T+c*np.log(T)+d*T**e)/6895
+
+        c1,c2 = np.split(self.vap_coeffs,2)
+        p1 = lambda T: pvap(T,*c1)
+        p2 = lambda T: pvap(T,*c2)
+        c_y12,c_y21 = np.split(self.gamma_cij,2)
+        y1 = lambda T: self.gamma_calc(eqx,T,c_y12,c_y21)
+        y2 = lambda T: self.gamma_calc(1-eqx,T,c_y21,c_y12)
+
+        def model(T):
+            # print(f'eqx={eqx}\ny1={y1(T)}\np1={p1(T)}\ny2={y2(T)}\np2={p2(T)}')
+            return (eqx*y1(T)*p1(T)+(1-eqx)*y2(T)*p2(T))-self.column_pres
+
+        T = newton(model,np.repeat(298,eqx.shape))
+
+        return eqx*y1(T)*p1(T)/self.column_pres
+
+    def gamma_calc(self,x1,T,c12,c21):
+        t12 = self.__tao_calc(T,*c12)
+        t21 = self.__tao_calc(T,*c21)
+        g12 = np.exp(-self.alpha*t12)
+        g21 = np.exp(-self.alpha*t21)
+        x2 = 1-x1
+        return np.exp(x2**2*(t21*(g21/(x1+x2*g21))**2+t12*g12/(x2+x1*g12)**2))
+
+    @staticmethod
+    def __tao_calc(T,A=0,B=0,C=0,D=0):
+        return A+B/T+C*np.log(T)+D*T
 
     def run_simulation(self, tend=100, y0=None):
 
@@ -45,7 +82,7 @@ class BinaryDistillationTower:
             L = np.zeros_like(m)
             L[0] = self.F - self.D + self.Kc * (m[0] - self.reboiler_holdup)
             L[1:-1] = self.weir_const * (m[1:-1] - self.tray_holdup) ** 1.5
-            L[-1] = self.D * self.R
+            L[-1] = self.D * self.R if self.D != 0 else self.R
 
             dm = np.zeros_like(m)
             dm[0] = L[1] - V[0] - L[0]
@@ -80,7 +117,7 @@ class BinaryDistillationTower:
         return solve_ivp(rhs, (0, tend), y0,
                          method='Radau', dense_output=True)
 
-    def mccabe_thiele_plot(self,mcx):
+    def mccabe_thiele_plot(self,mcx,**kwargs):
         xplot = np.linspace(0, 1, 101)
         y = self.eqy(xplot)
 
@@ -96,19 +133,18 @@ class BinaryDistillationTower:
         layout = go.Layout(
             width=600, height=600,
             template='plotly_dark',
-            showlegend=False
+            showlegend=False,
+            xaxis=dict(title='liquid mol fraction'),
+            yaxis=dict(title='vapour mol fraction')
         )
 
         fig = go.Figure(layout=layout)
 
         fig.add_trace(go.Scatter(x=xplot, y=y, mode='lines'))
         fig.add_trace(go.Scatter(x=mc[:, 0], y=mc[:, 1], mode='lines'))
-        fig.add_trace(go.Scatter(x=mc[1:-1:2, 0], y=mc[1:-1:2, 1], mode='lines'))
+        fig.add_trace(go.Scatter(x=mc[1::2, 0], y=mc[1::2, 1], mode='lines'))
+
+        fig.update_layout(**kwargs)
 
         return fig
-
-
-
-    def export_to_excel(self):
-        pass
 
