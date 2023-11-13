@@ -103,7 +103,7 @@ class BinaryDistillationTower:
 
         fig.add_trace(go.Scatter(x=xplot, y=y, mode='lines'))
         fig.add_trace(go.Scatter(x=mc[:, 0], y=mc[:, 1], mode='lines'))
-        fig.add_trace(go.Scatter(x=mc[1::2, 0], y=mc[1::2, 1], mode='lines'))
+        fig.add_trace(go.Scatter(x=mc[1:-1:2, 0], y=mc[1:-1:2, 1], mode='lines'))
 
         return fig
 
