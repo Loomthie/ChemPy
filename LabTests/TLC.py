@@ -1,4 +1,5 @@
 import urllib.request as re
+from IPython.display import display_html
 
 
 class Spot:
@@ -18,6 +19,9 @@ class Series:
         colors = [i.color for i in self.spots]
         return (i for i in [self.name,rfVals,colors])
 
+    def __str__(self):
+        return str(list(self))
+
 
 class Plate:
 
@@ -25,3 +29,12 @@ class Plate:
 
     def __init__(self,*args:Series):
         self.args = args
+
+    def __repr__(self):
+        return ""
+
+    def _repr_html_(self):
+        cnt = "".join([i.decode('utf-8') for i in re.urlopen(self.__templateFile)])
+        tlcSpots = "[" + ",".join([str(i) for i in self.args]) + "]"
+        return cnt.format(tlcSpots=tlcSpots)
+
