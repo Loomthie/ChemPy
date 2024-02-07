@@ -78,5 +78,21 @@
             ctx.fillText(tlcSpots[i][0],x,startLine+30);
         }}
     </script>
+
+<script>
+    function saveImage()
+    {{
+        const canvas = document.getElementById("myCanvas")
+        let canvasUrl = canvas.toDataURL("image/jpeg");
+        const createEl = document.createElement('a');
+        createEl.href = canvasUrl;
+        createEl.download = "TLCPlate";
+        createEl.click();
+        createEl.remove();
+    }}
+</script>
+
+<button id="Download" style="width:100px; height: 50px;margin-left: 20px;" onclick="saveImage()">Download</button>
+
 </body>
 </html>
