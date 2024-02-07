@@ -46,7 +46,7 @@ class SeriesAvg:
         self.spots = {}
         for key,val in spots.items():
             rfVals = [i.rfValue for i in val]
-            self.spots[key] = [np.average(rfVals),val[0].color,np.std(rfVals)]
+            self.spots[key] = [np.average(rfVals),val[0].color,np.std(rfVals)*1.96]
 
     def __iter__(self):
         return (i for i in [self.seriesName,[self.spots[key][0] for key in self.spots],[self.spots[key][1] for key in self.spots],
