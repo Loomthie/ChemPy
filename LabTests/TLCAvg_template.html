@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TLC Plate</title>
+    <title>Title</title>
 </head>
 <body>
-    <div style="display: flex;">
-    <canvas id="myCanvas" width="200" height="500" style="border: 2px solid black;"></canvas>
-    <script type="text/javascript">
+    <canvas id="TLC" width="200" height="500" style="border: 2px solid black;"></canvas>
 
-        const canvas = document.getElementById("myCanvas");
+    <script>
+        const canvas = document.getElementById("TLC");
         const ctx = canvas.getContext("2d");
 
         ctx.fillStyle = "#fff";
@@ -28,7 +27,7 @@
         ctx.stroke();
 
         const tlcSpots = {tlcSpots};
-        // const tlcSpots = [['CAF',[0.5],["#ddd"]]]
+        //const tlcSpots = [['CAF',[0.5],["#f00"],[.05]]]
         
         ctx.beginPath();
         ctx.moveTo(0,startLine);
@@ -37,8 +36,10 @@
         ctx.strokeStyle = "#000";
         ctx.stroke();
 
-        let x = 0
-        let y = 0
+        let x = 0;
+        let y = 0;
+        let y_lower = 0;
+        let y_upper = 0;
         for (let i = 0; i<tlcSpots.length; i++){{
             
             x = canvas.offsetWidth/(tlcSpots.length+1)*(i+1)
@@ -46,11 +47,26 @@
             for (let j = 0; j<tlcSpots[i][1].length;j++){{
                 y = startLine - tlcSpots[i][1][j]*(startLine-solventFront);
                 ctx.beginPath();
-                ctx.arc(x,y,20,0,2*Math.PI,true);
+                ctx.arc(x,y,5,0,2*Math.PI,true);
                 ctx.fillStyle = tlcSpots[i][2][j]
                 ctx.fill();
+                ctx.strokeStyle = tlcSpots[i][2][j]
+                ctx.stroke();
+
+                y_lower = startLine - (tlcSpots[i][1][j]-tlcSpots[i][3][j])*(startLine-solventFront)
+                
+                y_upper = startLine - (tlcSpots[i][1][j]+tlcSpots[i][3][j])*(startLine-solventFront)
+
+                ctx.moveTo(x-20,y_lower);
+                ctx.lineTo(x+20,y_lower);
+                ctx.moveTo(x,y_lower);
+                ctx.lineTo(x,y_upper);
+                ctx.moveTo(x-20,y_upper);
+                ctx.lineTo(x+20,y_upper)
                 ctx.stroke();
             }}
+            ctx.beginPath();
+            ctx.strokeStyle = "#000"
             ctx.moveTo(x,startLine-10);
             ctx.lineTo(x,startLine+10);
             ctx.lineWidth = 4;
@@ -61,25 +77,6 @@
             ctx.fillStyle = "#000"
             ctx.fillText(tlcSpots[i][0],x,startLine+30);
         }}
-    
     </script>
-
-    <script>
-        function saveImage()
-        {{
-            const canvas = document.getElementById("myCanvas")
-            let canvasUrl = canvas.toDataURL("image/jpeg");
-            const createEl = document.createElement('a');
-            createEl.href = canvasUrl;
-            createEl.download = "TLCPlate";
-            createEl.click();
-            createEl.remove();
-        }}
-    </script>
-
-    <button id="Download" style="width:100px; height: 50px;margin-left: 20px;" onclick="saveImage()">Download</button>
-
-    </div>
-
 </body>
 </html>
