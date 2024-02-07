@@ -27,6 +27,9 @@ class Plate:
 
     __templateFile = "https://raw.githubusercontent.com/Loomthie/ChemPy/master/LabTests/TLC_template.html"
 
+    width = 200
+    height = 500
+
     def __init__(self,*args:Series):
         self.args = args
 
@@ -36,7 +39,7 @@ class Plate:
     def _repr_html_(self):
         cnt = "".join([i.decode('utf-8') for i in re.urlopen(self.__templateFile)])
         tlcSpots = "[" + ",".join([str(i) for i in self.args]) + "]"
-        return cnt.format(tlcSpots=tlcSpots)
+        return cnt.format(tlcSpots=tlcSpots,width=self.width,height=self.height)
 
 
 class SeriesAvg:
@@ -58,6 +61,9 @@ class SeriesAvg:
 
 class PlateAvg:
 
+    width = 200
+    height = 500
+
     __templateFile = "https://raw.githubusercontent.com/Loomthie/ChemPy/master/LabTests/TLCAvg_template.html"
 
     def __init__(self,*series_avgs:SeriesAvg):
@@ -69,5 +75,5 @@ class PlateAvg:
 
         cnt = "".join([i.decode('utf-8') for i in re.urlopen(self.__templateFile)])
         tlcSpots = "[" + ",".join([str(i) for i in self.series]) + "]"
-        return cnt.format(tlcSpots=tlcSpots)
+        return cnt.format(tlcSpots=tlcSpots,width=self.width,height=self.height)
 
