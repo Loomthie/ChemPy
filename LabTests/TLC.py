@@ -57,7 +57,7 @@ class SeriesAvg:
 
 class PlateAvg:
 
-    __templateFile = ""
+    __templateFile = "https://raw.githubusercontent.com/Loomthie/ChemPy/master/LabTests/TLCAvg_template.html"
 
     def __init__(self,*series_avgs:SeriesAvg):
         self.series = series_avgs
