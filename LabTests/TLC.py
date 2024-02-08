@@ -1,5 +1,6 @@
 import urllib.request as re
 import numpy as np
+import scipy.stats as stats
 
 
 class Spot:
@@ -45,12 +46,17 @@ class Plate:
 
 class SeriesAvg:
 
+    stats_mode = "t"
+
     def __init__(self,series_name, **spots:list[Spot]):
         self.seriesName = series_name
         self.spots = {}
         for key,val in spots.items():
             rfVals = [i.rfValue for i in val]
-            self.spots[key] = [np.average(rfVals),val[0].color,np.std(rfVals)*1.96/np.sqrt(len(rfVals))]
+            self.spots[key] = [np.average(rfVals),val[0].color,
+                               np.std(rfVals)/np.sqrt(len(rfVals)*(stats.t.ppf(0.95,len(rfVals)-1)
+                                                                   if self.stats_mode == "t" else
+                                                                   1.96))]
 
     def __iter__(self):
         return (i for i in [self.seriesName,[self.spots[key][0] for key in self.spots],[self.spots[key][1] for key in self.spots],
