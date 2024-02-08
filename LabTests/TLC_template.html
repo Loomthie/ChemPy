@@ -12,6 +12,11 @@
         const canvas = document.getElementById("myCanvas");
         const ctx = canvas.getContext("2d");
 
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#000"
+        ctx.fillText("{title}",canvas.offsetWidth/2,.1*canvas.offsetHeight)
+
         ctx.fillStyle = "#fff";
         ctx.fillRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
         ctx.stroke();
