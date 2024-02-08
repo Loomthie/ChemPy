@@ -12,14 +12,14 @@
         const canvas = document.getElementById("TLC");
         const ctx = canvas.getContext("2d");
 
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
+        ctx.stroke();
+
         ctx.font = "bold 20px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = "#000"
         ctx.fillText("{title}",canvas.offsetWidth/2,.1*canvas.offsetHeight)
-
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
-        ctx.stroke();
 
         const solventFront = .2 * canvas.offsetHeight;
         const startLine = canvas.offsetHeight - 50;
