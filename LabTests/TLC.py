@@ -77,5 +77,5 @@ class PlateAvg:
 
         cnt = "".join([i.decode('utf-8') for i in re.urlopen(self.__templateFile)])
         tlcSpots = "[" + ",".join([str(i) for i in self.series]) + "]"
-        return cnt.format(tlcSpots=tlcSpots,width=self.width,height=self.height,title="Title")
+        return cnt.format(tlcSpots=tlcSpots,width=self.width,height=self.height,title=self.title)
 
