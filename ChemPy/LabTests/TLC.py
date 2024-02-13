@@ -1,6 +1,7 @@
 import urllib.request as re
 import numpy as np
 import scipy.stats as stats
+import pandas as pd
 
 
 class Spot:
