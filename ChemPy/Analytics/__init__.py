@@ -66,7 +66,7 @@ class Dataset:
 
     def percentile(self, per):
         per = per / 100
-        indD = per * (self.size + 1) - 1
+        indD = per * (self.size - 1)
 
         ind = int(indD // 1)
         dec = indD - ind
