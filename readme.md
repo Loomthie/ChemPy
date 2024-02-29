@@ -1,6 +1,6 @@
 <img src="Images/pngs/ChemPyLogo.png" width="50%">
 
-# ChemPy (v0.1.0)
+# PyChemSuite (v0.1.0)
 
 ## Description
 
