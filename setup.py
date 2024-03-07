@@ -1,7 +1,7 @@
 from setuptools import setup,find_packages
 
 setup(
-    name='ChemPy',
+    name='PyChemSuite',
     version='0.1.0',
     packages=find_packages(),
     url='',
